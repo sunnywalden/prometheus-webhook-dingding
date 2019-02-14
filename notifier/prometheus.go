@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/timonwong/prometheus-webhook-dingtalk/models"
 	"github.com/timonwong/prometheus-webhook-dingtalk/template"
+	"strconv"
 )
 
 func BuildDingTalkNotification(promMessage *models.WebhookMessage) (*models.DingTalkNotification, error) {
@@ -17,6 +19,16 @@ func BuildDingTalkNotification(promMessage *models.WebhookMessage) (*models.Ding
 		return nil, err
 	}
 	content, err := template.ExecuteTextString(`{{ template "ding.link.content" . }}`, promMessage)
+	if err != nil {
+		return nil, err
+	}
+	at_mobiles, err := template.ExecuteTextString(`{{ template "dding.at.at_mobiles" . }}`, promMessage)
+	if err != nil {
+		return nil, err
+	}
+	atmobiles := strings.Split(at_mobiles, ",")
+	is_at_all, err := template.ExecuteTextString(`{{ template "ding.at.is_at_all" . }}`, promMessage)
+	isatall, err := strconv.ParseBool(is_at_all)
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +45,10 @@ func BuildDingTalkNotification(promMessage *models.WebhookMessage) (*models.Ding
 		Markdown: &models.DingTalkNotificationMarkdown{
 			Title: title,
 			Text:  content,
+		},
+		At: &models.DingTalkNotificationAt{
+			AtMobiles: atmobiles,
+			IsAtAll:   isatall,
 		},
 	}
 	return notification, nil

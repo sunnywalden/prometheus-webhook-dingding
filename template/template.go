@@ -42,6 +42,7 @@ func init() {
 	for _, c := range "_*`" {
 		isMarkdownSpecial[c] = true
 	}
+
 }
 
 func (t *safeTemplate) UpdateTemplate(newTpl string) (oldTpl string, err error) {
@@ -60,6 +61,11 @@ func (t *safeTemplate) UpdateTemplate(newTpl string) (oldTpl string, err error) 
 	t.Template = tpl
 	t.current = newTpl
 	return
+}
+
+func Add(i int) int {
+	return i + 1
+
 }
 
 func (t *safeTemplate) Clone() (*template.Template, error) {
