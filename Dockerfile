@@ -1,16 +1,17 @@
-FROM        timonwong/prometheus-webhook-dingtalk:latest
+FROM timonwong/prometheus-webhook-dingtalk:latest
 
-MAINTAINER  sunnywalden <sunnywalden@gmail.com>
-
-ENV WEBHOOK_PATH /usr/share/prometheus-webhook-dingtalk
+MAINTAINER sunnywalden <sunnywalden@gmail.com>
 
 ENV BIN_PATH /bin
 
-COPY ./prometheus-webhook-dingtalk $BIN_PATH
+ADD prometheus-webhook-dingtalk $BIN_PATH
 
-COPY ./template $WEBHOOK_PATH/template/
+ENV WEBHOOK_PATH /usr/share/prometheus-webhook-dingtalk
 
-COPY ./notifier $WEBHOOK_PATH/notifier/
+COPY template $WEBHOOK_PATH/
+
+COPY notifier $WEBHOOK_PATH/
 
 EXPOSE      8060
+
 ENTRYPOINT  [ "/bin/prometheus-webhook-dingtalk" ]
