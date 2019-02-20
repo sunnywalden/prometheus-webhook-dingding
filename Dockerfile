@@ -2,7 +2,7 @@ FROM timonwong/prometheus-webhook-dingtalk:latest
 
 MAINTAINER sunnywalden <sunnywalden@gmail.com>
 
-COPY webhook_dingding /bin
+COPY prometheus-webhook-dingtalk /bin/
 
 ENV WEBHOOK_PATH /usr/share/prometheus-webhook-dingtalk
 
