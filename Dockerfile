@@ -2,11 +2,15 @@ FROM        timonwong/prometheus-webhook-dingtalk:latest
 
 MAINTAINER  sunnywalden <sunnywalden@gmail.com>
 
-COPY prometheus-webhook-dingtalk  /bin/
+ENV WEBHOOK_PATH /usr/share/prometheus-webhook-dingtalk
 
-COPY template/template.go        /usr/share/prometheus-webhook-dingtalk/template/
+ENV BIN_PATH /bin
 
-COPY notifier/prometheus.go        /usr/share/prometheus-webhook-dingtalk/notifier/
+COPY prometheus-webhook-dingtalk $BIN_PATH
+
+COPY template $WEBHOOK_PATH/template/
+
+COPY notifier $WEBHOOK_PATH/notifier/
 
 EXPOSE      8060
 ENTRYPOINT  [ "/bin/prometheus-webhook-dingtalk" ]
