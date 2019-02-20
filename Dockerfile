@@ -1,8 +1,9 @@
-FROM        quay.io/prometheus/busybox:latest
-MAINTAINER  Timon Wong <timon86.wang@gmail.com>
+FROM        timonwong/prometheus-webhook-dingtalk:latest
+MAINTAINER  sunnywalden <sunnywalden@gmail.com>
 
 COPY prometheus-webhook-dingtalk  /bin/prometheus-webhook-dingtalk
-COPY template/default.tmpl        /usr/share/prometheus-webhook-dingtalk/template/default.tmpl
+COPY template/template.go        /usr/share/prometheus-webhook-dingtalk/template/template.go
+COPY notifire/prometheus.go        /usr/share/prometheus-webhook-dingtalk/notifire/prometheus.go
 
 EXPOSE      8060
 ENTRYPOINT  [ "/bin/prometheus-webhook-dingtalk" ]

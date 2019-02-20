@@ -1,0 +1,62 @@
+{{ define "__subject" }}{{ if .Alerts.Firing }}**[监控]{{ .Alerts.Firing | len }}个实例发生报警,规则：{{ .GroupLabels.alertname }}**{{ end }}{{ end }}
+{{ define "__resolved" }}{{ if .Alerts.Resolved }}**[监控]{{ .Alerts.Resolved | len }}个实例报警恢复,规则：{{ .GroupLabels.alertname }}**{{ end }}{{ end }}
+{{ define "__alertmanagerURL" }}{{ .ExternalURL }}{{"/#/alerts?receiver="}}{{ .Receiver }}
+{{ end }}
+{{ define "__appalertURL" }}https://prom.ctcfin.com/d/7neVIlwmk/gao-jing-guan-li?orgId=1&alertname={{.Labels.alertname}}
+{{ end }}
+{{ define "__appgrafanaURL" }}https://prom.ctcfin.com/d/5viidsyik/ying-yong-shi-li-jian-kang-zhuang-tai?var-app_name={{ .Labels.app_name }}&var-team={{ .Labels.team }}
+{{ end }}
+{{ define "__grafanaURL" }}https://prom.ctcfin.com/d/DQtVMUPmk/zhu-ji-jian-kong-zhi-biao?var-name={{ .Labels.instance_ip }}
+{{ end }}
+
+{{ define "__text_alert_list" }}
+{{ if eq .GroupLabels.alertname "应用健康状态异常通知" "应用健康状态异常警告" "应用健康状态异常紧急" }}
+{{ if .Alerts.Firing }}
+{{ range $index, $value := .Alerts.Firing }}
+**{{ add $index}}.**
+{{ .Labels.app_name }}应用健康检查失败，ip: {{ .Labels.instance_ip }}, url：{{ .Labels.instance }} ，告警首次触发时间：{{ .StartsAt.Format "2006-01-02 15:04:05" }}，[应用大盘详情]({{ template "__appgrafanaURL" . }})，[告警详情]({{ template "__appalertURL" . }})。
+{{ end }}
+{{ end }}
+{{ if .Alerts.Resolved }}
+{{ template "__resolved" . }}
+
+{{ range $index, $value := .Alerts.Resolved }}
+{{ if eq $index 0 }}
+---- 已恢复告警 ----{{ end }}
+
+*{{ add $index }}.*
+{{ .Labels.app_name }}应用健康检查恢复，ip: {{ .Labels.instance_ip }}, url：{{ .Labels.instance }} ，告警恢复时间：{{ .EndsAt.Format "2006-01-02 15:04:05" }}，[应用大盘详情]({{ template "__appgrafanaURL" . }})
+{{ end }}
+{{ end }}
+{{ else }}
+{{ if .Alerts.Firing }}
+{{ range $index, $value := .Alerts.Firing }}
+**{{ add $index }}.**
+{{ .Annotations.summary | markdown | html }}，当前值：{{printf "%.5s" .Annotations.description}}%，告警首次触发时间：{{ .StartsAt.Format "2006-01-02 15:04:05" }}，[主机大盘详情]({{ template "__grafanaURL" . }})，[告警详情]({{ template "__appalertURL" . }})
+{{ end }}
+{{ end }}
+{{ if .Alerts.Resolved }}
+{{ template "__resolved" . }}
+
+{{ range $index, $value := .Alerts.Resolved }}
+{{ if eq $index 0 }}
+
+---- 已恢复告警 ----{{ end }}
+
+*{{ add $index }}.*
+{{ .Annotations.summary | markdown | html }}，告警恢复时间：{{ .EndsAt.Format "2006-01-02 15:04:05" }}，[主机大盘详情]({{ template "__grafanaURL" . }})
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{ define "ding.link.title" }}{{ template "__subject" . }}{{ if not .Alerts.Firing }}{{ template "__resolved" . }}{{ end }}{{ end }}
+{{ define "ding.link.content" }}
+{{ template "__subject" . }}
+{{ template "__text_alert_list" . }}
+
+{{ if ne .CommonLabels.is_at_all "true" }} {{ getconnectors .CommonLabels.at_mobiles}}{{ end }}
+{{ end }}
+{ end }}
+{{ define "ding.at.at_mobiles" }}{{ .CommonLabels.at_mobiles }}{{ end }}
+{{ define "ding.at.is_at_all" }}{{ .CommonLabels.is_at_all }}{{ end }}
