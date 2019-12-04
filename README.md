@@ -1,5 +1,7 @@
 # prometheus-webhook-dingtalk
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://github.com/hhyo/archery/blob/master/LICENSE)
+
 Generating [DingTalk] notification from [Prometheus] [AlertManager] WebHooks.
 
 This is a project forked from [github.com/timonwong/prometheus-webhook-dingtalk](https://github.com/timonwong/prometheus-webhook-dingtalk)
